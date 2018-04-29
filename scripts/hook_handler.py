@@ -8,7 +8,7 @@ import os
 def application(environ, start_response):
     # POST or GET ?
     method = environ['REQUEST_METHOD']
-    response_body = ""
+    response_body = "OK"
     status = '200 OK'
 
     if method == "POST":
@@ -22,19 +22,17 @@ def application(environ, start_response):
         # in the HTTP request body which is passed by the WSGI server
         # in the file like wsgi.input environment variable.
         request_body = environ['wsgi.input'].read(request_body_size)
-        data = json.loads(request_body)
-
-        response_body = ""
+        data = json.loads(request_body.decode("utf-8"))
+        print(data)
     elif method == "GET":
-        response_body = ""
+        response_body = "OK"
 
     response_headers = [
         ('Content-Type', 'text/html'),
-        ('Content-Length', str(len(response_body)))
     ]
 
     start_response(status, response_headers)
-    return [response_body]
+    return [response_body.encode("utf-8")]
 
 
 if __name__ == "__main__":
