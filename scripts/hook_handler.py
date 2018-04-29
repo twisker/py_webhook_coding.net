@@ -1,8 +1,15 @@
 #!/usr/bin/env python
-
+import hmac
+import hashlib
 from wsgiref.simple_server import make_server
 import json
 import os
+
+__SECRET_TOKEN__ = "45cf9640cfc24fb49edefa4954f103fb"
+
+def verify_token(body, signature):
+    s = "sha1=%s" % hmac.new(__SECRET_TOKEN__, body, digestmod=hashlib.sha1).hexdigest()
+    return s == signature
 
 
 def application(environ, start_response):
@@ -12,21 +19,18 @@ def application(environ, start_response):
     status = '200 OK'
 
     if method == "POST":
-        # the environment variable CONTENT_LENGTH may be empty or missing
-        try:
-            request_body_size = int(environ.get('CONTENT_LENGTH', 0))
-        except (ValueError):
-            request_body_size = 0
-
-        # When the method is POST the variable will be sent
-        # in the HTTP request body which is passed by the WSGI server
-        # in the file like wsgi.input environment variable.
+        request_body_size = int(environ.get('CONTENT_LENGTH', 0))
         request_body = environ['wsgi.input'].read(request_body_size)
-        data = json.loads(request_body.decode("utf-8"))
-        print(data)
-    elif method == "GET":
-        response_body = "OK"
-
+        if "HTTP_X_HUB_SIGNATURE" in environ and verify_token(request_body, environ["HTTP_X_HUB_SIGNATURE"]):
+            data = json.loads(request_body.decode("utf-8"))
+            # 如果是push事件
+            if "hook" in data and "events" in data["hook"] and "push" in data["hook"]["events"]:
+                os.chdir("/path/to/your/local/repos")
+                os.system("git pull origin master")
+                response_body = "repos pulled"
+        else:
+            response_body = "Invalid Request"
+            status = "403 Forbidden"
     response_headers = [
         ('Content-Type', 'text/html'),
     ]

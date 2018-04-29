@@ -36,8 +36,10 @@ a very very simple webhook written in python for coding.net repos events
 
 使用以下类似的python脚本。
 
+
 ```python
 #!/usr/bin/python
-
+response_body = "OK"
+status = '200 OK'
 ```
     
