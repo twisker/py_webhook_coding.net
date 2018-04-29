@@ -56,6 +56,9 @@ import hmac
 import hashlib
 import os
 
+__CODING_SECRET_TOKEN__ = "generate_your_secret_token"
+__CODING_SIGNATURE__HEAD__ = "HTTP_X_CODING_SIGNATURE"
+
 def verify_token(body, signature):
     s = "sha1=%s" % hmac.new(__CODING_SECRET_TOKEN__.encode("utf-8"), body, digestmod=hashlib.sha1).hexdigest()
     return s == signature
