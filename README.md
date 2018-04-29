@@ -18,7 +18,7 @@ a very very simple webhook written in python for coding.net repos events
 
 可以在ubuntu命令行，使用如下命令：
 
-    apt-get install supervisord
+    apt-get install supervisor
     
 ### 2、安装uwsgi
 
@@ -39,6 +39,7 @@ a very very simple webhook written in python for coding.net repos events
 
 ```python
 #!/usr/bin/python
+
 response_body = "OK"
 status = '200 OK'
 ```
