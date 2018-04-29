@@ -22,9 +22,11 @@ a very very simple webhook written in python for coding.net repos events
     
 ### 2、安装uwsgi
 
-使用如下命令：
+使用如下命令，安装python / virtualenv，创建一个虚拟环境，并激活：
 
-    apt-get install build-essential python-dev
+    apt-get install build-essential python-dev virtualenv
+    virtualenv .venv
+    source .venv/bin/activate
     
 然后使用pip安装uwsgi
 
