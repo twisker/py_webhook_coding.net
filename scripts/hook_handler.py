@@ -7,6 +7,7 @@ import os
 
 __SECRET_TOKEN__ = "generate_your_secret_token"
 __SIGNATURE__HEAD__ = "HTTP_X_CODING_SIGNATURE"
+__CODING_EVENT__ = "HTTP_X_CODING_EVENT"
 
 def verify_token(body, signature):
     s = "sha1=%s" % hmac.new(__SECRET_TOKEN__.encode("utf-8"), body, digestmod=hashlib.sha1).hexdigest()
@@ -25,10 +26,13 @@ def application(environ, start_response):
         if __SIGNATURE__HEAD__ in environ and verify_token(request_body, environ[__SIGNATURE__HEAD__]):
             data = json.loads(request_body.decode("utf-8"))
             # 如果是push事件
-            if "hook" in data and "events" in data["hook"] and "push" in data["hook"]["events"]:
+            event = environ.get(__CODING_EVENT__, "ping")
+            if event == "push":
                 os.chdir("/path/to/your/local/repos")
                 os.system("git pull origin master")
                 response_body = "repos pulled"
+            elif event == "ping":
+                response_body = "ping succeed"
         else:
             response_body = "Invalid Request"
             status = "403 Forbidden"
